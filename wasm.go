@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 	"unsafe"
 )
 
@@ -107,7 +108,13 @@ func processAttributesV2(ptr uint64) uint64 {
 // export ProcessRegex
 func processAttributesV3(ptr uint64) uint64 {
 	regex := regexp.MustCompile(`.*authorization.*`)
+	val := getDescriptionWrapper(ptr)
+	if regex.MatchString(val) {
+		val = val + ": processed"
+		setDescriptionWrapper(ptr, val)
+	}
 
+	return ptr
 }
 
 func main() {
