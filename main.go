@@ -18,29 +18,33 @@ func main() {
 	}
 
 	for i := 0; i < GoRoutines; i++ {
-		ctx := context.Background()
+		go func() {
+			ctx := context.Background()
 
-		ctx = arena.Initialize(ctx)
-		defer arena.Reset(ctx)
+			ctx = arena.Initialize(ctx)
+			defer arena.Reset(ctx)
 
-		fn := processor.module.ExportedFunction("Process")
-		if fn == nil {
-			fmt.Printf("[%d] no function named Process", i)
-			return
-		}
+			module := processor.GetModule()
+			defer processor.ResetModule(module)
 
-		req := book.Book{
-			Name: uuid.New().String(),
-		}
+			fn := module.ExportedFunction("Process")
+			if fn == nil {
+				fmt.Printf("[%d] no function named Process", i)
+				return
+			}
 
-		res, err := fn.Call(ctx, arena.Store(ctx, &req))
-		if err != nil {
-			log.Panicf("[%d] failed to invoke Process: %v", i, err)
-		}
+			req := book.Book{
+				Name: uuid.New().String(),
+			}
 
-		if obj, ok := arena.Load(ctx, res[0]).(*book.Book); ok {
-			fmt.Printf("Processed Value: %s\n", obj.Name)
-		}
+			res, err := fn.Call(ctx, arena.Store(ctx, &req))
+			if err != nil {
+				log.Panicf("[%d] failed to invoke Process: %v", i, err)
+			}
 
+			if obj, ok := arena.Load(ctx, res[0]).(*book.Book); ok {
+				fmt.Printf("Processed Value: %s\n", obj.Name)
+			}
+		}()
 	}
 }

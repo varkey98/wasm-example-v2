@@ -26,5 +26,24 @@ func AddToModule(mod wazero.HostModuleBuilder) {
 			[]api.ValueType{
 				api.ValueTypeI64, // Name Ptr
 			}).
-		Export("Book_GetName")
+		Export("Book_GetName").
+		NewFunctionBuilder().
+		WithGoModuleFunction(
+			Book_SetDescription,
+			[]api.ValueType{
+				api.ValueTypeI64, // Ptr
+				api.ValueTypeI32, // Description position
+				api.ValueTypeI32, // Description length
+			}, []api.ValueType{}).
+		Export("Book_SetDescription").
+		NewFunctionBuilder().
+		WithGoModuleFunction(
+			Book_GetDescription,
+			[]api.ValueType{
+				api.ValueTypeI64, // Ptr
+			},
+			[]api.ValueType{
+				api.ValueTypeI64, // Description ptr
+			}).
+		Export("Book_GetDescription")
 }

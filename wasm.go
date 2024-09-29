@@ -9,20 +9,47 @@ import (
 )
 
 //export Book_SetName
-func PutAttribute(spanPtr uint64, kPtr, kLen uint32)
+func SetName(spanPtr uint64, kPtr, kLen uint32)
 
-func putAttributeWrapper(spanPtr uint64, key string) {
+func setNameWrapper(spanPtr uint64, key string) {
 	keyBytes := []byte(key)
 	kPtr := toUint32(keyBytes)
 
-	PutAttribute(spanPtr, kPtr, uint32(len(keyBytes)))
+	SetName(spanPtr, kPtr, uint32(len(keyBytes)))
 }
 
 //export Book_GetName
-func GetAttribute(spanPtr uint64) uint64
+func GetName(spanPtr uint64) uint64
 
-func getAttributeWrapper(spanPtr uint64) string {
-	out := GetAttribute(spanPtr)
+func getNameWrapper(spanPtr uint64) string {
+	out := GetName(spanPtr)
+	vLen := uint32(out)
+	vPtr := uint32(out >> uint64(32))
+	valBytes := *(*[]byte)(unsafe.Pointer(&reflect.SliceHeader{
+		Data: uintptr(vPtr),
+		Len:  int(vLen),
+		Cap:  int(vLen),
+	}))
+	ret := string(valBytes)
+	deallocate(vPtr)
+	return ret
+}
+
+//export Book_SetDescription
+func SetDescription(spanPtr uint64, kPtr, kLen uint32)
+
+func setDescriptionWrapper(spanPtr uint64, key string) {
+	keyBytes := []byte(key)
+	kPtr := toUint32(keyBytes)
+
+	SetDescription(spanPtr, kPtr, uint32(len(keyBytes)))
+}
+
+//export Book_GetDescription
+func GetDescription(spanPtr uint64) uint64
+
+func getDescriptionWrapper(spanPtr uint64) string {
+	out := GetDescription(spanPtr)
 	vLen := uint32(out)
 	vPtr := uint32(out >> uint64(32))
 	valBytes := *(*[]byte)(unsafe.Pointer(&reflect.SliceHeader{
@@ -71,10 +98,16 @@ func deallocate(ptr uint32) {
 
 //export Process
 func processAttributesV2(ptr uint64) uint64 {
-	val := getAttributeWrapper(ptr)
-	putAttributeWrapper(ptr, val+" processed")
+	val := getNameWrapper(ptr)
+	setNameWrapper(ptr, val+" processed")
 
 	return ptr
+}
+
+// export ProcessRegex
+func processAttributesV3(ptr uint64) uint64 {
+	regex := regexp.MustCompile(`.*authorization.*`)
+
 }
 
 func main() {
