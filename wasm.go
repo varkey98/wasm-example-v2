@@ -3,11 +3,13 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
 	"regexp"
 	"unsafe"
 )
+
+//export free
+func free(ptr uint32)
 
 //export Book_SetName
 func SetName(spanPtr uint64, kPtr, kLen uint32)
@@ -32,7 +34,7 @@ func getNameWrapper(spanPtr uint64) string {
 		Cap:  int(vLen),
 	}))
 	ret := string(valBytes)
-	deallocate(vPtr)
+	free(vPtr)
 	return ret
 }
 
@@ -59,7 +61,7 @@ func getDescriptionWrapper(spanPtr uint64) string {
 		Cap:  int(vLen),
 	}))
 	ret := string(valBytes)
-	deallocate(vPtr)
+	free(vPtr)
 	return ret
 }
 
@@ -105,11 +107,12 @@ func processAttributesV2(ptr uint64) uint64 {
 	return ptr
 }
 
-// export ProcessRegex
+//export ProcessRegex
 func processAttributesV3(ptr uint64) uint64 {
-	regex := regexp.MustCompile(`.*authorization.*`)
+	regex := regexp.MustCompile(`.*traceable.*`)
 	val := getDescriptionWrapper(ptr)
 	if regex.MatchString(val) {
+		//fmt.Println("Matched")
 		val = val + ": processed"
 		setDescriptionWrapper(ptr, val)
 	}
@@ -118,5 +121,5 @@ func processAttributesV3(ptr uint64) uint64 {
 }
 
 func main() {
-	fmt.Println("Hello World")
+	//fmt.Println("Hello World")
 }
