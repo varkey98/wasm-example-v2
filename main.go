@@ -16,7 +16,7 @@ import (
 //go:embed body.json
 var description []byte
 
-const GoRoutines = 501
+const GoRoutines = 1
 
 func main() {
 	MultipleGoRoutinesTest()
@@ -43,7 +43,7 @@ func MultipleGoRoutinesTest() {
 			ctx = arena.Initialize(ctx)
 			module := arr[i].module
 
-			fn := module.ExportedFunction("ProcessRegex")
+			fn := module.ExportedFunction("ProcessRegex1")
 			if fn == nil {
 				fmt.Printf("[%d] no function named Process", i)
 				return
@@ -60,7 +60,7 @@ func MultipleGoRoutinesTest() {
 			}
 
 			if _, ok := arena.Load(ctx, res[0]).(*book.Book); ok {
-				//fmt.Printf("Processed Value: %s\n", obj.Name)
+				//fmt.Printf("Processed Value: %s\n", obj.Description)
 			}
 			wg.Done()
 			arena.Reset(ctx)

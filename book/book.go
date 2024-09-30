@@ -15,13 +15,10 @@ var Book_SetName = api.GoModuleFunc(func(ctx context.Context, module api.Module,
 	ptr := stack[0]
 	namePos := uint32(stack[1])
 	nameLen := uint32(stack[2])
+	name := CopyStringFromWasm(ctx, module, namePos, nameLen)
 
-	name, ok := module.Memory().Read(namePos, nameLen)
-	if !ok {
-		return
-	}
 	if obj, ok := arena.Load(ctx, ptr).(*Book); ok {
-		obj.Name = string(name)
+		obj.Name = name
 	}
 })
 
@@ -39,12 +36,9 @@ var Book_SetDescription = api.GoModuleFunc(func(ctx context.Context, module api.
 	descPos := uint32(stack[1])
 	descLen := uint32(stack[2])
 
-	desc, ok := module.Memory().Read(descPos, descLen)
-	if !ok {
-		return
-	}
+	desc := CopyStringFromWasm(ctx, module, descPos, descLen)
 	if obj, ok := arena.Load(ctx, ptr).(*Book); ok {
-		obj.Description = string(desc)
+		obj.Description = desc
 	}
 })
 
