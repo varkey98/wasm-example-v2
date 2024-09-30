@@ -34,6 +34,9 @@ func CopyStringToWasm(ctx context.Context, m api.Module, s string) uint64 {
 func CopyStringFromWasm(ctx context.Context, m api.Module, ptr, len uint32) string {
 	desc, _ := m.Memory().Read(ptr, len)
 	//free := m.ExportedFunction("deallocate")
+	//if free == nil {
+	//	fmt.Println("memory does not have a free function")
+	//}
 	//_, err := free.Call(ctx, uint64(ptr), uint64(len))
 	//if err != nil {
 	//	panic(err)
