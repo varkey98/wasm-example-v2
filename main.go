@@ -84,8 +84,8 @@ func MultipleGoRoutinesTestWithoutWasm() {
 				Description: string(description),
 			}
 
-			if regex.MatchString(req.Description) {
-				req.Description = req.Description + ": processed"
+			if regex.MatchString(req.Name) {
+				req.Name = req.Name + ": processed"
 			}
 
 			//fmt.Printf("Processed Value: %s\n", req.Name)

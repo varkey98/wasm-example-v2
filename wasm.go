@@ -110,11 +110,11 @@ func processAttributesV2(ptr uint64) uint64 {
 //export ProcessRegex
 func processAttributesV3(ptr uint64) uint64 {
 	regex := regexp.MustCompile(`.*traceable.*`)
-	val := getDescriptionWrapper(ptr)
+	val := getNameWrapper(ptr)
 	if regex.MatchString(val) {
 		//fmt.Println("Matched")
 		val = val + ": processed"
-		setDescriptionWrapper(ptr, val)
+		setNameWrapper(ptr, val)
 	}
 
 	return ptr
