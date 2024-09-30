@@ -19,32 +19,29 @@ var description []byte
 const GoRoutines = 501
 
 func main() {
-	start := time.Now()
 	MultipleGoRoutinesTest()
-	fmt.Printf("Elapsed Time for WASM based invocation: %v\n", time.Since(start))
 
-	start = time.Now()
+	start := time.Now()
 	MultipleGoRoutinesTestWithoutWasm()
 	fmt.Printf("Elapsed Time for Normal Invocation: %v\n", time.Since(start))
 }
 
 func MultipleGoRoutinesTest() {
-	processor, err := Initialise()
-	if err != nil {
-		panic(err)
+	arr := make([]*Processor, GoRoutines)
+	for i, _ := range arr {
+		processor, _ := Initialise()
+		arr[i] = processor
 	}
 
 	wg := sync.WaitGroup{}
 	wg.Add(GoRoutines)
+
+	start := time.Now()
 	for i := 0; i < GoRoutines; i++ {
 		go func() {
 			ctx := context.Background()
-
 			ctx = arena.Initialize(ctx)
-			defer arena.Reset(ctx)
-
-			module := processor.GetModule()
-			defer processor.ResetModule(module)
+			module := arr[i].module
 
 			fn := module.ExportedFunction("ProcessRegex")
 			if fn == nil {
@@ -66,10 +63,11 @@ func MultipleGoRoutinesTest() {
 				//fmt.Printf("Processed Value: %s\n", obj.Name)
 			}
 			wg.Done()
+			arena.Reset(ctx)
 		}()
 	}
-
 	wg.Wait()
+	fmt.Printf("Elapsed Time for WASM based invocation: %v\n", time.Since(start))
 }
 
 func MultipleGoRoutinesTestWithoutWasm() {

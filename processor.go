@@ -48,14 +48,20 @@ func Initialise() (*Processor, error) {
 		return nil, err
 	}
 
-	return &Processor{modulePool: sync.Pool{
-		New: func() interface{} {
-			mod, err := r.InstantiateModule(ctx, code, config)
-			if err != nil {
-				panic(err)
-			}
-			return mod
-		}}}, nil
+	mod, _ := r.InstantiateModule(ctx, code, config)
+
+	return &Processor{
+		//modulePool: sync.Pool{
+		//	New: func() interface{} {
+		//		mod, err := r.InstantiateModule(ctx, code, config)
+		//		if err != nil {
+		//			panic(err)
+		//		}
+		//		return mod
+		//	},
+		//},
+		module: mod,
+	}, nil
 }
 
 func (p *Processor) GetModule() api.Module {
