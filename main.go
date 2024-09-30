@@ -60,7 +60,7 @@ func MultipleGoRoutinesTest() {
 			}
 
 			if _, ok := arena.Load(ctx, res[0]).(*book.Book); ok {
-				//fmt.Printf("Processed Value: %s\n", obj.Name)
+				//fmt.Printf("Processed Value: %s\n", obj.Description)
 			}
 			wg.Done()
 			arena.Reset(ctx)
