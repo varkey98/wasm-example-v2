@@ -16,7 +16,7 @@ import (
 //go:embed body.json
 var description []byte
 
-const GoRoutines = 501
+const GoRoutines = 1
 
 func main() {
 	MultipleGoRoutinesTest()
