@@ -16,7 +16,7 @@ import (
 //go:embed body.json
 var description []byte
 
-const GoRoutines = 1
+const GoRoutines = 100
 
 func main() {
 	MultipleGoRoutinesTest()
@@ -27,11 +27,13 @@ func main() {
 }
 
 func MultipleGoRoutinesTest() {
+	initStart := time.Now()
 	arr := make([]*Processor, GoRoutines)
 	for i, _ := range arr {
 		processor, _ := Initialise()
 		arr[i] = processor
 	}
+	fmt.Println("Elapsed Time for WASM init: %v\n", time.Since(initStart))
 
 	wg := sync.WaitGroup{}
 	wg.Add(GoRoutines)
