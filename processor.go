@@ -15,8 +15,10 @@ import (
 var bytes []byte
 
 type Processor struct {
-	module     api.Module
+	module     wazero.CompiledModule
+	cfg        wazero.ModuleConfig
 	modulePool sync.Pool
+	r          wazero.Runtime
 }
 
 func Initialise() (*Processor, error) {
@@ -48,14 +50,11 @@ func Initialise() (*Processor, error) {
 		return nil, err
 	}
 
-	return &Processor{modulePool: sync.Pool{
-		New: func() interface{} {
-			mod, err := r.InstantiateModule(ctx, code, config)
-			if err != nil {
-				panic(err)
-			}
-			return mod
-		}}}, nil
+	return &Processor{
+		module: code,
+		cfg:    config,
+		r:      r,
+	}, nil
 }
 
 func (p *Processor) GetModule() api.Module {
@@ -64,4 +63,7 @@ func (p *Processor) GetModule() api.Module {
 
 func (p *Processor) ResetModule(module api.Module) {
 	p.modulePool.Put(module)
+}
+func (p *Processor) Close(ctx context.Context) error {
+	return p.module.Close(ctx)
 }
